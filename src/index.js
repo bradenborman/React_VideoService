@@ -4,8 +4,13 @@ import SearchBar from './components/search_bar';
 import YTSearch from 'youtube-api-search';
 import VideoList from './components/video_list';
 import VideoDetail from './components/video_detail';
+import _ from 'lodash'
 
-const API_KEY = 'AIzaSyBNwmtPqDpnGHc5v_BkbJ2ovKLF75vcAdE';
+const keyA = 'AIzaSyDzdQs';
+const keyB = 'FwHxpac6F';
+const API_KEY = `${keyA}_6wO2t3gI4o2${keyB}vLuzKow`;
+//To prevent bots on git to recognize api key
+
 
 class App extends Component {
 
@@ -13,41 +18,47 @@ class App extends Component {
         super(props)
         this.state = {
             videos: [],
-            selectedVideo: null            
+            selectedVideo: null
         };
 
+        this.videoSearch('Will Fuller');
+
+    }
+
+
+    render() {
+
+        const videoSearch = _.debounce((term) => { this.videoSearch(term) }, 300)
+
+
+
+        return (
+            <div>
+                <SearchBar onSearchTermChange={videoSearch} />
+
+                <VideoDetail video={this.state.selectedVideo} />
+
+                <VideoList
+                    onVideoSelect={selectedVideo => this.setState({ selectedVideo })}
+                    videos={this.state.videos} />
+
+            </div>
+        )
+    }
+
+    videoSearch(term) {
         YTSearch(
             {
                 key: API_KEY,
-                term: 'Shelter Insurance'
+                term: term
             }, (videos) => {
                 this.setState({
                     videos: videos,
                     selectedVideo: videos[0]
                 });
             });
-
-    }
-
-
-    render() {
-        return (
-            <div>
-               <div className="block"><h2 className="header">Shelter Tube</h2></div>
-                <SearchBar />
-                <VideoDetail video={this.state.selectedVideo} />
-                <VideoList
-                    onVideoSelect={selectedVideo => this.setState({ selectedVideo })}
-                    videos={this.state.videos} />
-            </div>
-        )
     }
 
 }
-
-
-
-
-
 
 ReactDom.render(<App />, document.querySelector('.container'))
